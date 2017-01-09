@@ -267,7 +267,8 @@ class BaseMethodIntrospector(object):
         # If there is no docstring on the method, get class docs
         return IntrospectorHelper.get_summary(
             self.callback,
-            self.get_docs() or self.parent.get_description())
+            # self.get_docs() or self.parent.get_description())
+            self.parent.get_description() or self.get_docs())
 
     def get_nickname(self):
         """ Returns the APIView's nickname """
