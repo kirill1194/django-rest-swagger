@@ -718,7 +718,8 @@ class ViewSetMethodIntrospector(BaseMethodIntrospector):
             return False
         str_list = doc_str.split('\n')
         clean_first_line = formatting.dedent(str_list[0])
-        if not clean_first_line:
+        clean_second_line = formatting.dedent(str_list[1])
+        if not clean_first_line and not clean_second_line:
             return True
         else:
             return False
