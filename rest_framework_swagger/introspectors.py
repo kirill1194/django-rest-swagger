@@ -614,6 +614,24 @@ class APIViewMethodIntrospector(BaseMethodIntrospector):
         """
         return self.retrieve_docstring()
 
+    def docStartWithSpace(self):
+        method = str(self.method).lower()
+        if not hasattr(self.callback, method):
+            return None
+
+        view_cls = getattr(self.callback, method)
+
+        doc_str = view_cls.__doc__
+        if not doc_str:
+            return False
+        str_list = doc_str.split('\n')
+        clean_first_line = formatting.dedent(str_list[0])
+        clean_second_line = formatting.dedent(str_list[1])
+        if not clean_first_line and not clean_second_line:
+            return True
+        else:
+            return False
+
 
 
 
@@ -625,6 +643,19 @@ class WrappedAPIViewMethodIntrospector(BaseMethodIntrospector):
         will be used
         """
         return get_view_description(self.callback)
+
+    def docStartWithSpace(self):
+
+        doc_str = self.callback.__doc__
+        if not doc_str:
+            return False
+        str_list = doc_str.split('\n')
+        clean_first_line = formatting.dedent(str_list[0])
+        clean_second_line = formatting.dedent(str_list[1])
+        if not clean_first_line and not clean_second_line:
+            return True
+        else:
+            return False
 
     def get_module(self):
         from rest_framework_swagger.decorators import wrapper_to_func
