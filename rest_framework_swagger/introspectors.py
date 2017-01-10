@@ -714,6 +714,8 @@ class ViewSetMethodIntrospector(BaseMethodIntrospector):
         view_cls = getattr(self.callback, method)
 
         doc_str = view_cls.__doc__
+        if not doc_str:
+            return False
         str_list = doc_str.split('\n')
         clean_first_line = formatting.dedent(str_list[0])
         if not clean_first_line:
