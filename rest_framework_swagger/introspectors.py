@@ -266,10 +266,8 @@ class BaseMethodIntrospector(object):
     def get_summary(self):
         # If there is no docstring on the method, get class docs
         func_doc = self.get_docs()
-        func_description = get_view_description(
-            self.callback, html=False, docstring=self.get_docs()) \
-            .split("\n")[0].split(".")[0]
-        if not func_description:
+
+        if self.docStartWithSpace():
             func_doc = None
 
         return IntrospectorHelper.get_summary(
@@ -346,6 +344,10 @@ class BaseMethodIntrospector(object):
     @abstractmethod
     def get_docs(self):
         return ''
+
+    @abstractmethod
+    def docStartWithSpace(self):
+        return False
 
     def retrieve_docstring(self):
         """
@@ -613,6 +615,8 @@ class APIViewMethodIntrospector(BaseMethodIntrospector):
         return self.retrieve_docstring()
 
 
+
+
 class WrappedAPIViewMethodIntrospector(BaseMethodIntrospector):
     def get_docs(self):
         """
@@ -701,6 +705,22 @@ class ViewSetMethodIntrospector(BaseMethodIntrospector):
         will be used
         """
         return self.retrieve_docstring()
+
+    def docStartWithSpace(self):
+        method = str(self.method).lower()
+        if not hasattr(self.callback, method):
+            return None
+
+        view_cls = getattr(self.callback, method)
+
+        doc_str = view_cls.__doc__
+        str_list = doc_str.split('\n')
+        clean_first_line = formatting.dedent(str_list[0])
+        if not clean_first_line:
+            return True
+        else:
+            return False
+
 
     def create_view(self):
         view = super(ViewSetMethodIntrospector, self).create_view()
