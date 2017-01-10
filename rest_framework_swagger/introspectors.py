@@ -283,7 +283,7 @@ class BaseMethodIntrospector(object):
         clean_second_line = formatting.dedent(str_list[1])
         if not clean_first_line and not clean_second_line:
             return True
-        elif not clean_second_line and '---' in clean_second_line:
+        elif not clean_first_line and '---' in clean_second_line:
             return True
         else:
             return False
