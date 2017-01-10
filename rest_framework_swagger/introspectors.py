@@ -275,6 +275,20 @@ class BaseMethodIntrospector(object):
             func_doc or self.parent.get_description())
             # self.parent.get_description() or self.get_docs()
 
+    def isEmptyFirstLineInDocStr(self, doc_str):
+        if not doc_str:
+            return False
+        str_list = doc_str.split('\n')
+        clean_first_line = formatting.dedent(str_list[0])
+        clean_second_line = formatting.dedent(str_list[1])
+        if not clean_first_line and not clean_second_line:
+            return True
+        elif not clean_second_line and clean_second_line.startswith('---'):
+            return True
+        else:
+            return False
+
+
 
     def get_nickname(self):
         """ Returns the APIView's nickname """
@@ -622,15 +636,7 @@ class APIViewMethodIntrospector(BaseMethodIntrospector):
         view_cls = getattr(self.callback, method)
 
         doc_str = view_cls.__doc__
-        if not doc_str:
-            return False
-        str_list = doc_str.split('\n')
-        clean_first_line = formatting.dedent(str_list[0])
-        clean_second_line = formatting.dedent(str_list[1])
-        if not clean_first_line and not clean_second_line:
-            return True
-        else:
-            return False
+        return self.isEmptyFirstLineInDocStr(doc_str)
 
 
 
@@ -647,15 +653,7 @@ class WrappedAPIViewMethodIntrospector(BaseMethodIntrospector):
     def docStartWithSpace(self):
 
         doc_str = self.callback.__doc__
-        if not doc_str:
-            return False
-        str_list = doc_str.split('\n')
-        clean_first_line = formatting.dedent(str_list[0])
-        clean_second_line = formatting.dedent(str_list[1])
-        if not clean_first_line and not clean_second_line:
-            return True
-        else:
-            return False
+        return self.isEmptyFirstLineInDocStr(doc_str)
 
     def get_module(self):
         from rest_framework_swagger.decorators import wrapper_to_func
@@ -745,15 +743,7 @@ class ViewSetMethodIntrospector(BaseMethodIntrospector):
         view_cls = getattr(self.callback, method)
 
         doc_str = view_cls.__doc__
-        if not doc_str:
-            return False
-        str_list = doc_str.split('\n')
-        clean_first_line = formatting.dedent(str_list[0])
-        clean_second_line = formatting.dedent(str_list[1])
-        if not clean_first_line and not clean_second_line:
-            return True
-        else:
-            return False
+        return self.isEmptyFirstLineInDocStr(doc_str)
 
 
     def create_view(self):
