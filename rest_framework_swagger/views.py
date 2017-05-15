@@ -68,6 +68,7 @@ class SwaggerUIView(View):
                 'enabled_methods': mark_safe(
                     json.dumps(rfs.SWAGGER_SETTINGS.get('enabled_methods'))),
                 'doc_expansion': rfs.SWAGGER_SETTINGS.get('doc_expansion', ''),
+                'custom_headers': rfs.SWAGGER_SETTINGS.get('custom_headers', []),
             },
             'rest_framework_settings': {
                 'DEFAULT_VERSIONING_CLASS':

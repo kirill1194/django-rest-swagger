@@ -91,3 +91,6 @@ Many thanks to Tom Christie & all the contributors who have developed [Django RE
 [license]: https://pypi.python.org/pypi/django-rest-swagger/
 [docs-badge]: https://readthedocs.io/projects/django-rest-swagger/badge/
 [docs]: http://django-rest-swagger.readthedocs.io/
+
+### Addition.
+Settings parameter 'custom_headers', must be a list of dict: {'header': 'HTTP HEADER', 'placeholder': 'name'}

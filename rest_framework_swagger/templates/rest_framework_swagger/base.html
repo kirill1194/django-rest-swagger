@@ -26,10 +26,11 @@
                             <div class="input icon-btn">
                                 <img id="show-wordnik-dev-icon" src="{% static 'rest_framework_swagger/images/wordnik_api.png' %}" title="Show Wordnik Developer Apis">
                             </div>
-                            <div class="input"><input placeholder="http://example.com/api" id="input_baseUrl" name="baseUrl" type="text"/></div>
+                            <!--<div class="input" style="width: "><input placeholder="http://example.com/api" id="input_baseUrl" name="baseUrl" type="text"/></div>-->
                             <div class="input"><input placeholder="api_key" id="input_apiKey" name="apiKey" type="text"/></div>
-                            <div class="input"><input placeholder="api_key" id="input_sport_id" name="sport_id" type="text"/></div>
-                            <div class="input"><a id="explore" href="#">Explore</a></div>
+                            {% for custom_header in swagger_settings.custom_headers %}
+                                <div class="input"><input placeholder="{{custom_header.placeholder}}" id="header_{{custom_header.header}}" name="{{custom_header.placeholder}}" type="text"/></div>
+                            {% endfor %}
                         </form>
                     {% endblock %}
                 </div>
@@ -89,10 +90,46 @@
                         window.authorizations.add('key', new ApiKeyAuthorization('Authorization', '{{ swagger_settings.token_type }} ' + key, 'header'));
                     }
                 });
+                {% for custom_header in swagger_settings.custom_headers %}
+                    $('#header_{{custom_header.header}}').change(function () {
+                        var value = $('#header_{{custom_header.header}}')[0].value;
+                        log('{{custom_header.header}}: ' + value);
+
+                        if (value && value.trim() != '') {
+                            console.log('added {{custom_header.header}} ' + value);
+                            window.authorizations.add('{{custom_header.header}}', new ApiKeyAuthorization('{{custom_header.header}}', value, 'header'));
+                        }
+                    });
+
+                {% endfor %}
+
+                $('#input_sport_id').change(function () {
+                    var sport_id = $('#input_sport_id')[0].value;
+                    log('sport_id: ' + sport_id);
+
+                    if (sport_id && sport_id.trim() != '') {
+                        console.log('added sport_id ' + sport_id);
+                        window.authorizations.add('sport', new ApiKeyAuthorization('SPORT', sport_id, 'header'));
+                    }
+                });
 
                 {% if swagger_settings.api_key %}
                     window.authorizations.add('key', new ApiKeyAuthorization('Authorization', '{{ swagger_settings.token_type }} ' + '{{ swagger_settings.api_key }}', 'header'));
                 {% endif %}
+
+                window.authorizations.add('Sport', {
+                        apply: function(obj, authorizations) {
+                            $.each(obj.headers, function(k, v) {
+                                if (k.toLowerCase() === "accept") {
+                                    if (v.indexOf('; version=') === -1) {
+                                        obj.headers[k] += "; version={{ swagger_settings.api_version }}";
+                                    }
+                                    return false;  // break.
+                                }
+                            });
+                            return true;
+                        }
+                    });
 
                 {# Add version to Accept header, if AcceptHeaderVersioning is used. #}
                 {% if swagger_settings.api_version and rest_framework_settings.DEFAULT_VERSIONING_CLASS == 'rest_framework.versioning.AcceptHeaderVersioning' %}
