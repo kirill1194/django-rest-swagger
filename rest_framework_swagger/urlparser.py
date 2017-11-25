@@ -89,7 +89,7 @@ class UrlParser(object):
         Returns top level APIs
         """
         filtered_paths = set()
-        base_path = list(self.__get_base_path__(root_paths))
+        base_path = self.__get_base_path__(root_paths)
         for path in root_paths:
             resource = path.replace(base_path, '').split('/')[0]
             filtered_paths.add(base_path + resource)
@@ -97,7 +97,7 @@ class UrlParser(object):
         return list(filtered_paths)
 
     def __get_base_path__(self, root_paths):
-        base_path = os.path.commonprefix(root_paths)
+        base_path = os.path.commonprefix(list(root_paths))
         slash_index = base_path.rfind('/') + 1
         base_path = base_path[:slash_index]
 
